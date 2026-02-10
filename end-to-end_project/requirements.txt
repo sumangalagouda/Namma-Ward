@@ -1,0 +1,11 @@
+flask
+flask_sqlalchemy
+Flask-Bcrypt
+flask_jwt_extended
+flask_cors
+PyMySQL
+cryptography
+python-dotenv
+Flask-Migrate
+Flask-APScheduler
+scikit-learn
