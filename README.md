@@ -102,3 +102,31 @@ namma-ward/
 ├── static/uploads/ # Complaint images
 ├── requirements.txt
 └── README.md
+## 🎯 Key Learnings
+
+- Building scalable REST APIs
+- JWT-based authentication & role management
+- Geo-spatial routing logic
+- Database design with SQLAlchemy
+- Full-stack deployment on Render
+- Real-world system architecture
+
+---
+
+## 🔮 Future Improvements
+
+- Real-time notifications (WebSockets)
+- Map-based complaint visualization
+- Analytics dashboard
+- Mobile app
+- Cloud image storage (S3)
+- CI/CD automation
+
+## ⭐ Why this project stands out
+
+This project demonstrates:
+- Full-stack development
+- Backend architecture design
+- Authentication systems
+- Deployment experience
+- Real-world civic problem solving
