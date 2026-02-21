@@ -171,11 +171,11 @@ def register_officer():
     off_id=data.get('off_id') if data else None
     role=data.get('role') if data else None
     email=data.get('email') if data else None
-    area=data.get('area') if data else None
+    ward_id=data.get('ward_id') if data else None
     phone_number=data.get('phone_number') if data else None
     password=data.get('password') if data else None
 
-    if not all([name,off_id,role,email,area,phone_number,password]):
+    if not all([name,off_id,role,email,ward_id,phone_number,password]):
         return jsonify({"error":"All fields are required"}),400
 
     if Officer.query.filter_by(email=email).first() or Officer.query.filter_by(off_id=off_id).first():
@@ -191,7 +191,7 @@ def register_officer():
         off_id=off_id,
         role=role,
         email=email,
-        area=area,
+        ward_id=ward_id,
         phone_number=phone_number,
         password=hash_password
     )

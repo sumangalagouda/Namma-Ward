@@ -2,10 +2,10 @@ import { useState } from "react";
 import api from "../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import loginpng from "../assets/login.png";
+import logo from "../assets/logo.jpeg";
 
 export default function Login() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -29,6 +29,7 @@ export default function Login() {
   return (
     /* 🔥 MUST be relative */
     <div className="relative h-screen w-full overflow-hidden">
+    
 
       {/* ---------- BACKGROUND IMAGE ---------- */}
       <img
@@ -43,11 +44,19 @@ export default function Login() {
 
       {/* ---------- CONTENT ---------- */}
       <div className="relative z-20 flex items-center justify-center h-full">
-
+      
         <form
           onSubmit={handleLogin}
           className="bg-white/90 backdrop-blur-lg shadow-2xl rounded-2xl p-10 w-96"
         >
+                    {/* ---------- LOGO ---------- */}
+          <div className="flex justify-center mb-4">
+            <img
+              src={logo}
+              alt="logo"
+              className="h-16 w-16 object-contain"
+            />
+          </div>
           <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
             Login
           </h2>

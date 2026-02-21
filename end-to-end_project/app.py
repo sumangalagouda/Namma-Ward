@@ -31,6 +31,7 @@ def create_app():
     from models.points_ledger import PointsLedger
     from models.sla import SLARule
     from models.issue_type import IssueType
+    from models.wards import Ward
 
     Migrate(app, db)
 

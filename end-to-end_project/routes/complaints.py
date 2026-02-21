@@ -55,10 +55,9 @@ def create_complaint():
 
 
     # 🔥 auto assign officer
-    officer = Officer.query.filter_by(area=area).first()
+    officer = Officer.query.filter_by(ward_id=area).first()
     if not officer:
         return jsonify({"error":"No officer available for this area"}),400
-
 
     if not allowed_file(file.filename):
         return jsonify({"error":"only jpg,jpeg,png allowed"}),400
@@ -344,8 +343,7 @@ def dashboard_complaints():
     claims = get_jwt()
     role = claims.get('role')
 
-    # 🔥 only officers/admin can see all
-    if role not in ['officer', 'admin', 'citizen']:
+    if role not in ['officer', 'citizen']:
         return jsonify({"error": "not allowed"}), 403
 
     status_filter = request.args.get("status")  # query param

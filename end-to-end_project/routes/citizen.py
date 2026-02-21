@@ -43,3 +43,29 @@ def notifications():
         })
 
     return jsonify(result),201
+
+@citizen_bp.route('/off-profile/<string:officer_id>', methods=['GET'])
+def get_officer_profile(officer_id):
+    officer = Officer.query.filter_by(off_id=officer_id).first()
+
+    if not officer:
+        return jsonify({"msg": "Officer not found"}), 404
+
+    complaints = Complaint.query.filter_by(officer_id=officer_id).all()
+
+    return jsonify({
+        "officer": {
+            "id": officer.off_id,
+            "name": officer.name,
+            "email": officer.email,
+            "ward_id": officer.ward_id
+        },
+        "complaints": [
+            {
+                "id": c.id,
+                "title": c.title,
+                "status": c.status
+            }
+            for c in complaints
+        ]
+    })

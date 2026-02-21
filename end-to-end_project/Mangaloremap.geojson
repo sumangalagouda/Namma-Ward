@@ -1,0 +1,66 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 5, "name": "Ward-5", "location": "Adyar" },
+      "geometry": { "type": "Polygon", "coordinates": [[[74.928179,12.86954],[74.993022,12.819644],[75.034994,12.857839],[74.962994,12.915297],[74.928179,12.86954]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 4, "name": "Ward-4", "location": "Bajape" },
+      "geometry": { "type": "Polygon", "coordinates": [[[74.963027,12.916239],[74.976172,12.975324],[74.893074,12.96169],[74.926652,12.871688],[74.963027,12.916239]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 6, "name": "Ward-6", "location": "Bantwal" },
+      "geometry": { "type": "Polygon", "coordinates": [[[74.977723,12.975107],[74.962234,12.916316],[75.033971,12.860691],[75.063317,12.901219],[75.086958,12.945713],[74.977723,12.975107]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 7, "name": "Ward-7", "location": "Uppinangady" },
+      "geometry": { "type": "Polygon", "coordinates": [[[75.083572,12.94868],[75.031976,12.852465],[75.272012,12.775904],[75.263039,12.94868],[75.083572,12.94868]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 9, "name": "Ward-9", "location": "Puttur" },
+      "geometry": { "type": "Polygon", "coordinates": [[[75.025246,12.859026],[75.063326,12.655493],[75.224846,12.535079],[75.271956,12.77585],[75.025246,12.859026]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 2, "name": "Ward-2", "location": "Moodbidri" },
+      "geometry": { "type": "Polygon", "coordinates": [[[75.267957,12.95085],[75.330251,13.142696],[74.988638,13.191612],[74.976581,12.974349],[75.085094,12.944975],[75.267957,12.95085]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 1, "name": "Ward-1", "location": "Surathkal" },
+      "geometry": { "type": "Polygon", "coordinates": [[[74.988638,13.189655],[74.7475,13.199438],[74.805775,12.933224],[74.892053,12.96274],[74.978327,12.977235],[74.988638,13.189655]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 3, "name": "Ward-3", "location": "Lalbagh" },
+      "geometry": { "type": "Polygon", "coordinates": [[[74.802804,12.933747],[74.855635,12.771323],[74.974634,12.831277],[74.931992,12.865116],[74.889351,12.96274],[74.802804,12.933747]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 8, "name": "Ward-8", "location": "Manjeshwar" },
+      "geometry": { "type": "Polygon", "coordinates": [[[75.053194,12.695311],[75.027775,12.847459],[74.994577,12.818166],[74.858528,12.769972],[74.902904,12.667292],[75.053194,12.695311]]] }
+    },
+
+    {
+      "type": "Feature",
+      "properties": { "ward_id": 10, "name": "Ward-10", "location": "Badiadka" },
+      "geometry": { "type": "Polygon", "coordinates": [[[74.97116,12.518272],[75.226787,12.533488],[75.064682,12.655184],[75.052212,12.696243],[74.899459,12.665829],[74.97116,12.518272]]] }
+    }
+
+  ]
+}

@@ -21,6 +21,7 @@ import ComplaintView from "./pages/ComplaintView";
 import OfficerProfile from "./pages/officer-profile";
 import Notification from "./pages/Notifcation";
 import CitizenProfile from "./pages/citizen-profile";
+import OfficerDetails from "./pages/OfficerDetails";
 
 
 
@@ -42,8 +43,7 @@ export default function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/select-role" element={<SelectRole />} />
         <Route path="/complaint/:id" element={<ComplaintView />} />
-
-
+        <Route path="/officer/:id" element={<OfficerDetails />} />
 
         {/* ---------- CITIZEN ---------- */}
         <Route
@@ -130,6 +130,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
 
       </Routes>
 

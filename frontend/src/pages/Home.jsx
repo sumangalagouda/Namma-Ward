@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import earthBg from "../assets/earth.jpg";
+import earthBg from "../assets/HomeImage.png";
 
 export default function Home() {
   return (
     <div className="relative h-screen w-full overflow-hidden">
+
 
       {/* BACKGROUND */}
       <img

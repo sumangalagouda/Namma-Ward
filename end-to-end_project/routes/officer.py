@@ -25,7 +25,7 @@ def profile():
     off=(Officer.query.filter_by(off_id=get_jwt_identity()).first())
     name=off.name
     email=off.email
-    area=off.area
+    ward_id=off.ward_id
     officer_id =off.off_id
 
     complaints = (
@@ -43,7 +43,7 @@ def profile():
             "title": c.title,
             "description": c.description,
             "issue_type": c.issue_type.name,
-            "area": c.area,
+            "ward_id": c.ward_id,
             "status": c.status,
             "image": c.image_path,
             "created_at": c.created_at.isoformat(),
@@ -54,7 +54,25 @@ def profile():
         "officer": {
             "name": name,
             "email": email,
-            "area": area
+            "ward_id": ward_id
         },
         "complaints": result
     })
+
+# @officer_bp.route("/points", methods=["POST"])
+# def update_points():
+#     data=request.get_json()
+#     officer_id=data.get("officer_id")
+#     points=data.get("points")
+#     officer=Officer.query.filter_by(off_id=officer_id).first()
+#     if not officer:
+#         return jsonify({"msg":"Officer not found"}),404
+#     from model.points_ledger import PointsLedger
+#     ledger_entry=PointsLedger(
+#         officer_id=officer_id,
+#         points=points
+#     )
+#     db.session.add(ledger_entry)
+#     db.session.commit()
+#     return jsonify({"msg":"Points updated successfully"}),200
+    
