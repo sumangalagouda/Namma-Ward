@@ -5,5 +5,7 @@ def time_efficiency(created_at, action_time, deadline):
     ratio = elapsed / allowed
 
     if ratio <= 1:
-        return max(0.2, 1 - ratio)
-    return -0.5 * ratio
+        # on time — closer to 1 is better
+        return max(0.5, 1.0 - 0.5 * ratio)  # returns 0.5..1.0
+    # late — return a positive decayed score (smaller than on-time)
+    return max(0.1, 1.0 / ratio)  # decays toward 0 but stays positive

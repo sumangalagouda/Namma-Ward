@@ -11,6 +11,9 @@ def detect_duplicate(new_complaint):
     best_score = 0
 
     for c in candidates:
+        if getattr(c, "id", None) == getattr(new_complaint, "id", None):
+            continue
+
         score = text_similarity_score(
             new_complaint.description,
             c.description

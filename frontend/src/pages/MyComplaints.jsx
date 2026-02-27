@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { 
   CheckCircle, 
-  ThumbsUp, 
-  Send, 
   Filter,
   Search,
   Clock,
@@ -12,7 +10,6 @@ import {
   MessageSquare,
   Calendar,
   MapPin,
-  TrendingUp,
   Eye,
   Loader2,
   X,
@@ -21,7 +18,6 @@ import {
 
 export default function MyComplaints() {
   const [complaints, setComplaints] = useState([]);
-  const [commentText, setCommentText] = useState({});
   const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,51 +70,7 @@ export default function MyComplaints() {
     setProcessingActions({ ...processingActions, [`verify-${id}`]: false });
   };
 
-  // ---------------- UPVOTE ----------------
-  const upvote = async (id) => {
-    setProcessingActions({ ...processingActions, [`upvote-${id}`]: true });
-    
-    try {
-      const res = await api.post(`/complaints/${id}/upvotes`);
-
-      setComplaints((prev) =>
-        prev.map((c) =>
-          c.id === id ? { ...c, upvote_count: res.data.upvote_count } : c
-        )
-      );
-      
-      showNotification("Upvoted!", "success");
-    } catch (error) {
-      showNotification(error.response?.data?.error || "Failed to upvote", "error");
-    }
-    
-    setTimeout(() => {
-      setProcessingActions({ ...processingActions, [`upvote-${id}`]: false });
-    }, 300);
-  };
-
-  // ---------------- COMMENT ----------------
-  const addComment = async (id) => {
-    if (!commentText[id]?.trim()) return;
-
-    setProcessingActions({ ...processingActions, [`comment-${id}`]: true });
-
-    try {
-      await api.post(`/complaints/${id}/comment`, {
-        comment: commentText[id],
-      });
-
-      setCommentText({ ...commentText, [id]: "" });
-      showNotification("Comment added successfully!", "success");
-      
-      // Optionally refetch to show new comment
-      fetchComplaints();
-    } catch (error) {
-      showNotification("Failed to add comment", "error");
-    }
-    
-    setProcessingActions({ ...processingActions, [`comment-${id}`]: false });
-  };
+  // Upvote and comment removed — users cannot upvote or comment on their own complaints here
 
   // ---------------- FILTERING & SORTING ----------------
   const filteredComplaints = complaints
@@ -311,10 +263,10 @@ export default function MyComplaints() {
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* IMAGE */}
-                  {c.image && (
+                      {c.image && (
                     <div className="relative h-40 overflow-hidden bg-gray-100 group">
                       <img
-                        src={`http://localhost:5000/${c.image}`}
+                        src={`http://localhost:5000/uploads/${c.image}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         alt={c.title}
                       />
@@ -392,57 +344,10 @@ export default function MyComplaints() {
                         </button>
                       )}
 
-                      <button
-                        onClick={() => upvote(c.id)}
-                        disabled={processingActions[`upvote-${c.id}`]}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 ${
-                          c.status === "resolved" ? '' : 'flex-1'
-                        } ${
-                          processingActions[`upvote-${c.id}`]
-                            ? 'bg-green-500 text-white scale-110'
-                            : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700'
-                        }`}
-                      >
-                        {processingActions[`upvote-${c.id}`] ? (
-                          <TrendingUp className="animate-bounce" size={16} />
-                        ) : (
-                          <ThumbsUp size={16} />
-                        )}
-                        <span className="font-medium">{c.upvote_count || 0}</span>
-                      </button>
+                      {/* upvote removed on My Complaints (users cannot upvote their own complaints) */}
                     </div>
 
-                    {/* COMMENT BOX */}
-                    <div className="flex gap-2 mt-auto">
-                      <input
-                        value={commentText[c.id] || ""}
-                        onChange={(e) =>
-                          setCommentText({
-                            ...commentText,
-                            [c.id]: e.target.value,
-                          })
-                        }
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter' && !processingActions[`comment-${c.id}`]) {
-                            addComment(c.id);
-                          }
-                        }}
-                        placeholder="Add a comment..."
-                        className="border-2 border-gray-200 rounded-lg px-3 py-2 flex-1 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 transition-all"
-                      />
-
-                      <button
-                        onClick={() => addComment(c.id)}
-                        disabled={!commentText[c.id]?.trim() || processingActions[`comment-${c.id}`]}
-                        className="bg-gradient-to-r from-gray-800 to-gray-900 text-white p-2 rounded-lg hover:from-black hover:to-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {processingActions[`comment-${c.id}`] ? (
-                          <Loader2 className="animate-spin" size={18} />
-                        ) : (
-                          <Send size={18} />
-                        )}
-                      </button>
-                    </div>
+                    {/* comments removed on My Complaints */}
                   </div>
                 </div>
               );

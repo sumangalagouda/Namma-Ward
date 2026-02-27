@@ -53,9 +53,16 @@ def create_complaint():
     from services.generate_area import get_area_from_location
     area = get_area_from_location(latitude, longitude)
 
-
     # 🔥 auto assign officer
-    officer = Officer.query.filter_by(ward_id=area).first()
+    try:
+        area = int(area) if area is not None else None
+    except (TypeError, ValueError):
+        area = None
+
+    if area is None:
+        return jsonify({"error":"Could not determine ward for this location"}),400
+
+    officer = Officer.query.filter(Officer.ward_id == area).first()
     if not officer:
         return jsonify({"error":"No officer available for this area"}),400
 

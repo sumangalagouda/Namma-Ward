@@ -15,6 +15,7 @@ import {
   Settings,
   Home,
   FileText,
+  DollarSign,
   LayoutDashboard,
   Trophy,
   Sparkles,
@@ -77,6 +78,7 @@ export default function Navbar() {
   const citizenLinks = [
     { path: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={18} /> },
     { path: "/my-complaints", label: "My Complaints", icon: <FileText size={18} /> },
+    { path: "/pay-bill", label: "Pay Bill", icon: <DollarSign size={18} /> },
     { path: "/complaint", label: "File Complaint", icon: <Sparkles size={18} />, highlight: true },
     { path: "/leaderboard", label: "Leaderboard", icon: <Trophy size={18} /> },
   ];

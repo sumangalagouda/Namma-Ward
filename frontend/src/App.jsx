@@ -14,6 +14,7 @@ import MyComplaints from "./pages/MyComplaints";
 import OfficerDashboard from "./pages/OfficerDashboard";
 import OfficerComplaints from "./pages/OfficerComplaints";
 import Leaderboard from "./pages/Leaderboard";
+import BillPayment from "./pages/BillPayment";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import SelectRole from "./pages/SelectRole";
@@ -60,6 +61,15 @@ export default function App() {
           element={
             <ProtectedRoute roles={["citizen"]}>
               <MyComplaints />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/pay-bill"
+          element={
+            <ProtectedRoute roles={["citizen"]}>
+              <BillPayment />
             </ProtectedRoute>
           }
         />

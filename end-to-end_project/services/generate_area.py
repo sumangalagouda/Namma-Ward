@@ -10,7 +10,8 @@ def get_area_from_location(lat, lng):
     for ward in wards:
         polygon = shape(ward.polygon)
 
-        if polygon.contains(point):
+        # use 'covers' so points on the boundary (vertices/edges) count as inside
+        if polygon.covers(point):
             return ward.ward_id  
 
     return None

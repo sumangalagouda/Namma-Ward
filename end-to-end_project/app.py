@@ -32,6 +32,8 @@ def create_app():
     from models.sla import SLARule
     from models.issue_type import IssueType
     from models.wards import Ward
+    from models.bill import Bill
+    from models.payment import Payment
 
     Migrate(app, db)
 

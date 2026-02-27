@@ -4,10 +4,17 @@ from services.location_service import haversine
 
 def get_candidate_complaints(new_complaint,radius_m=100,days=7):
     since=datetime.utcnow()-timedelta(days=days)
-    complaints=Complaint.query.filter(
+    complaint_id = getattr(new_complaint, "id", None)
+
+    query = Complaint.query.filter(
         Complaint.created_at>=since,
         Complaint.duplicate_of_id.is_(None)
-    ).all()
+    )
+
+    if complaint_id is not None:
+        query = query.filter(Complaint.id != complaint_id)
+
+    complaints = query.all()
 
     nearby=[]
     for c in complaints:
