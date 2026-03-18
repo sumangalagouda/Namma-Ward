@@ -26,6 +26,9 @@ import {
   Crown,
   Gift
 } from "lucide-react";
+import Container from "../components/ui/Container";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
 
 export default function CitizenProfile() {
   const [user, setUser] = useState(null);
@@ -141,20 +144,20 @@ export default function CitizenProfile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50">
+    <div className="min-h-screen bg-gray-50">
       
       {/* Hero Header */}
-      <div className="relative bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-2xl overflow-hidden">
+      <div className="relative bg-gradient-to-r from-primary-700 via-primary-600 to-primary-500 text-white shadow-md overflow-hidden">
         {/* Decorative circles */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
         
-        <div className="relative max-w-7xl mx-auto px-6 py-12">
+        <Container className="py-12">
           <div className="flex flex-col md:flex-row items-center gap-8">
             
             {/* Avatar */}
             <div className="relative group">
-              <div className="w-32 h-32 bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl transform group-hover:scale-105 group-hover:rotate-3 transition-all duration-300">
+              <div className="w-32 h-32 bg-gradient-to-br from-yellow-400 to-purple-600 rounded-3xl flex items-center justify-center shadow-2xl transform group-hover:scale-105 group-hover:rotate-3 transition-all duration-300">
                 <span className="text-5xl font-bold text-white">
                   {user?.name?.charAt(0).toUpperCase() || "C"}
                 </span>
@@ -171,48 +174,45 @@ export default function CitizenProfile() {
             {/* User Info */}
             <div className="flex-1 text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-3 mb-3">
-                <h1 className="text-4xl md:text-5xl font-bold">{user?.name || "Citizen"}</h1>
+                <h1 className="text-4xl md:text-5xl font-bold text-black">{user?.name || "Citizen"}</h1>
                 <Sparkles className="text-yellow-300 animate-pulse" size={28} />
               </div>
               
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start text-purple-100 mb-4">
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+              <div className="flex flex-wrap gap-4 justify-center md:justify-start text-black/90 mb-4">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg text-black">
                   <Mail size={18} />
                   <span>{user?.email || "N/A"}</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg text-black">
                   <MapPin size={18} />
                   <span>{user?.area || "N/A"}</span>
                 </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-lg text-black">
                   <Flag size={18} />
                   <span>{user?.state || "N/A"}</span>
                 </div>
               </div>
 
               {/* Impact Score */}
-              <div className="inline-flex items-center gap-3 bg-white/20 backdrop-blur-md px-6 py-3 rounded-full border-2 border-white/30">
+              <div className="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border-2 border-white/30">
                 <Zap className="text-yellow-300" size={24} />
                 <div className="text-left">
-                  <p className="text-xs text-purple-100">Impact Score</p>
-                  <p className="text-2xl font-bold">{impactScore}</p>
+                  <p className="text-xs text-white/90">Impact Score</p>
+                  <p className="text-2xl font-bold text-white">{impactScore}</p>
                 </div>
               </div>
             </div>
 
             {/* Action */}
-            <button
-              onClick={fetchProfile}
-              className="bg-white/10 backdrop-blur-sm border border-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/20 transition-all flex items-center gap-2 group"
-            >
-              <RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-500" />
-              Refresh
-            </button>
+            <Button onClick={fetchProfile} variant="ghost" className="text-white bg-white/10 border border-white/20 px-4 py-2">
+              <RefreshCw size={16} className="transition-transform duration-500 group-hover:rotate-180" />
+              <span className="ml-2">Refresh</span>
+            </Button>
           </div>
-        </div>
+        </Container>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6 md:p-8">
+      <Container className="p-6 md:p-8">
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
@@ -262,7 +262,7 @@ export default function CitizenProfile() {
         </div>
 
         {/* Achievements Section */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
+        <Card className="mb-8 p-6">
           <div className="flex items-center gap-3 mb-6">
             <Trophy className="text-yellow-500" size={28} />
             <h3 className="text-2xl font-bold text-gray-800">Achievements</h3>
@@ -298,10 +298,10 @@ export default function CitizenProfile() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Activity Overview */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
+        <Card className="mb-8 p-6">
           <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2 mb-6">
             <BarChart3 className="text-purple-600" size={24} />
             Activity Overview
@@ -397,13 +397,13 @@ export default function CitizenProfile() {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* My Complaints Section */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        <Card className="overflow-hidden">
           
           {/* Header */}
-          <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 border-b border-gray-200 p-6">
+          <div className="bg-gradient-to-r from-primary-50 to-white border-b border-gray-200 p-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                 <FileText className="text-purple-600" size={24} />
@@ -522,69 +522,31 @@ export default function CitizenProfile() {
               </div>
             )}
           </div>
-        </div>
-      </div>
+        </Card>
+      </Container>
     </div>
   );
 }
 
 /* Stat Card Component */
 function StatCard({ title, value, icon, color, pulse }) {
-  const colors = {
-    purple: {
-      bg: "from-purple-500 to-violet-600",
-      text: "text-purple-600",
-      light: "bg-purple-50"
-    },
-    amber: {
-      bg: "from-amber-500 to-orange-600",
-      text: "text-amber-600",
-      light: "bg-amber-50"
-    },
-    blue: {
-      bg: "from-blue-500 to-cyan-600",
-      text: "text-blue-600",
-      light: "bg-blue-50"
-    },
-    emerald: {
-      bg: "from-emerald-500 to-green-600",
-      text: "text-emerald-600",
-      light: "bg-emerald-50"
-    },
-    violet: {
-      bg: "from-violet-500 to-purple-600",
-      text: "text-violet-600",
-      light: "bg-violet-50"
-    },
-    pink: {
-      bg: "from-pink-500 to-rose-600",
-      text: "text-pink-600",
-      light: "bg-pink-50"
-    },
-    indigo: {
-      bg: "from-indigo-500 to-blue-600",
-      text: "text-indigo-600",
-      light: "bg-indigo-50"
-    },
-  };
+  const accent = 'from-primary-500 to-primary-600';
+  const lightBg = 'bg-white';
+  const textAccent = 'text-primary-600';
 
   return (
-    <div className={`
-      bg-white rounded-xl shadow-lg border border-gray-200
-      hover:shadow-xl hover:-translate-y-1 
-      transition-all duration-300 
-      overflow-hidden
-      ${pulse ? 'animate-pulse' : ''}
-    `}>
-      <div className={`h-2 bg-gradient-to-r ${colors[color].bg}`}></div>
+    <div className={
+      `bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden ${pulse ? 'animate-pulse' : ''}`
+    }>
+      <div className={`h-2 bg-gradient-to-r ${accent}`}></div>
       <div className="p-4 text-center">
-        <div className={`inline-flex p-2 rounded-lg ${colors[color].light} mb-2`}>
-          <div className={colors[color].text}>
+        <div className={`inline-flex p-2 rounded-lg ${lightBg} mb-2`}>
+          <div className={textAccent}>
             {icon}
           </div>
         </div>
         <p className="text-gray-500 text-xs font-medium mb-1">{title}</p>
-        <h3 className={`text-2xl font-bold ${colors[color].text}`}>
+        <h3 className={`text-2xl font-bold ${textAccent}`}>
           {value}
         </h3>
       </div>

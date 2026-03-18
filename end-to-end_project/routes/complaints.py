@@ -357,11 +357,6 @@ def dashboard_complaints():
 
     query = Complaint.query
 
-    # filter by officer if officer role
-    if role == "officer":
-        officer_id = get_jwt_identity()
-        query = query.filter_by(officer_id=officer_id)
-
     # 🔥 apply status filter
     if status_filter:
         query = query.filter_by(status=status_filter)

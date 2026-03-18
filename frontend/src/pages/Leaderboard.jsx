@@ -2,36 +2,156 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import {
-  Trophy,
-  Medal,
-  Award,
-  Crown,
-  Search,
-  Filter,
-  TrendingUp,
-  Shield,
-  Target,
-  Star,
-  Zap,
-  ChevronRight,
-  Loader2,
-  RefreshCw,
-  X,
-  BarChart3,
-  Users
+  Trophy, Crown, Search, TrendingUp, Shield,
+  Target, Star, Zap, ChevronRight, RefreshCw,
+  X, BarChart3, Users,
 } from "lucide-react";
 
+// ─── Design Tokens (shared across all pages) ──────────────────────────────────
+const STAT_GRADIENTS = {
+  navy:    "from-[#0f2a4a] to-[#1a3a6e]",
+  blue:    "from-[#2563eb] to-[#1d4ed8]",
+  emerald: "from-emerald-500 to-teal-500",
+  amber:   "from-amber-500 to-orange-500",
+};
+
+// ─── StatCard ─────────────────────────────────────────────────────────────────
+function StatCard({ label, value, icon, variant = "navy" }) {
+  return (
+    <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${STAT_GRADIENTS[variant]} p-4 shadow-lg`}>
+      <div className="absolute -right-3 -top-3 w-20 h-20 rounded-full bg-white/5" />
+      <div className="flex items-start justify-between mb-3">
+        <div className="p-2 rounded-xl bg-white/15">
+          <span className="text-white">{icon}</span>
+        </div>
+      </div>
+      <p className="text-white/70 text-xs font-medium mb-0.5">{label}</p>
+      <p className="text-white text-3xl font-bold">{value}</p>
+    </div>
+  );
+}
+
+// ─── FilterPill ───────────────────────────────────────────────────────────────
+function FilterPill({ active, onClick, children }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-150 ${
+        active
+          ? "bg-[#0f2a4a] text-white shadow"
+          : "bg-white border border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}
+
+// ─── Avatar ───────────────────────────────────────────────────────────────────
+function Avatar({ name, rank, size = "md" }) {
+  const sizes = { sm: "w-9 h-9 text-sm", md: "w-11 h-11 text-base" };
+  const rankGradients = {
+    1: "from-amber-400 to-yellow-500",
+    2: "from-slate-300 to-slate-400",
+    3: "from-amber-600 to-orange-600",
+  };
+  const gradient = rankGradients[rank] || "from-[#2563eb] to-[#1d4ed8]";
+  return (
+    <div className={`${sizes[size]} rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center text-white font-bold shadow flex-shrink-0`}>
+      {name.charAt(0).toUpperCase()}
+    </div>
+  );
+}
+
+// ─── Podium Card ──────────────────────────────────────────────────────────────
+function PodiumCard({ officer, rank, onClick }) {
+  const configs = {
+    1: {
+      wrapper: "bg-gradient-to-br from-amber-400 to-yellow-500 border-4 border-amber-300 shadow-2xl shadow-amber-500/30 scale-105 z-10",
+      label: "Champion",
+      labelColor: "text-amber-900",
+      valueColor: "text-amber-900",
+      avatarRing: "ring-4 ring-amber-200",
+      pt: "pt-0",
+    },
+    2: {
+      wrapper: "bg-white/10 backdrop-blur-sm border-2 border-slate-300/60",
+      label: "2nd Place",
+      labelColor: "text-white/70",
+      valueColor: "text-white",
+      avatarRing: "ring-2 ring-slate-300/40",
+      pt: "pt-6",
+    },
+    3: {
+      wrapper: "bg-white/10 backdrop-blur-sm border-2 border-amber-600/60",
+      label: "3rd Place",
+      labelColor: "text-white/70",
+      valueColor: "text-white",
+      avatarRing: "ring-2 ring-amber-600/40",
+      pt: "pt-6",
+    },
+  };
+  const cfg = configs[rank];
+  const medals = { 1: "🥇", 2: "🥈", 3: "🥉" };
+
+  return (
+    <div className={`relative ${cfg.pt}`}>
+      <div
+        onClick={onClick}
+        className={`${cfg.wrapper} rounded-2xl p-5 text-center cursor-pointer hover:brightness-105 transition-all`}
+      >
+        {rank === 1 && <Crown size={22} className="mx-auto text-amber-900 mb-2" />}
+        <div className={`w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center text-3xl shadow-lg ${cfg.avatarRing}`}>
+          {medals[rank]}
+        </div>
+        <p className={`font-bold text-base mb-0.5 ${rank === 1 ? "text-gray-900" : "text-white"}`}>
+          {officer.name}
+        </p>
+        <p className={`text-xs mb-3 ${cfg.labelColor}`}>{cfg.label}</p>
+        <div className="bg-white/20 rounded-xl px-3 py-2">
+          <p className={`text-2xl font-bold ${cfg.valueColor}`}>{officer.total_points}</p>
+          <p className={`text-[11px] ${cfg.labelColor}`}>points</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Loading Skeleton ─────────────────────────────────────────────────────────
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-14 h-14 border-4 border-[#0f2a4a]/20 border-t-[#0f2a4a] rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-slate-500 text-sm">Loading leaderboard…</p>
+      </div>
+    </div>
+  );
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+function EmptyState() {
+  return (
+    <div className="py-20 flex flex-col items-center text-center">
+      <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+        <Trophy size={28} className="text-slate-300" />
+      </div>
+      <p className="text-slate-700 font-semibold">No officers found</p>
+      <p className="text-slate-400 text-sm mt-1">Try adjusting your search or filters</p>
+    </div>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function Leaderboard() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterBy, setFilterBy] = useState("all"); // all, top10, top50
-  const [sortBy, setSortBy] = useState("rank"); // rank, points, resolved
+  const [filterBy, setFilterBy] = useState("all");
+  const [sortBy, setSortBy] = useState("rank");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchLeaderboard();
-  }, []);
+  useEffect(() => { fetchLeaderboard(); }, []);
 
   const fetchLeaderboard = async () => {
     setLoading(true);
@@ -45,401 +165,232 @@ export default function Leaderboard() {
     }
   };
 
-  // Filter and search logic
   const filteredData = data
     .filter((o) => {
-      // Search filter
-      const matchesSearch = 
+      const matchesSearch =
         o.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         o.officer_id.toString().includes(searchQuery);
-      
-      // Rank filter
-      let matchesFilter = true;
-      if (filterBy === "top10") matchesFilter = o.rank <= 10;
-      if (filterBy === "top50") matchesFilter = o.rank <= 50;
-      
+      const matchesFilter =
+        filterBy === "top10" ? o.rank <= 10 :
+        filterBy === "top50" ? o.rank <= 50 : true;
       return matchesSearch && matchesFilter;
     })
-    .sort((a, b) => {
-      if (sortBy === "points") return b.total_points - a.total_points;
-      if (sortBy === "resolved") return b.resolved - a.resolved;
-      return a.rank - b.rank; // default: rank
-    });
-
-  // Medal/rank display
-  const getRankDisplay = (rank) => {
-    if (rank === 1) return { emoji: "🥇", color: "text-yellow-500", label: "1st" };
-    if (rank === 2) return { emoji: "🥈", color: "text-gray-400", label: "2nd" };
-    if (rank === 3) return { emoji: "🥉", color: "text-amber-600", label: "3rd" };
-    return { emoji: null, color: "text-gray-600", label: `${rank}th` };
-  };
-
-  // Stats
-  const stats = {
-    total: data.length,
-    avgPoints: data.length > 0 ? Math.round(data.reduce((sum, o) => sum + o.total_points, 0) / data.length) : 0,
-    totalResolved: data.reduce((sum, o) => sum + o.resolved, 0),
-    topPerformer: data[0] || null,
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 text-lg">Loading leaderboard...</p>
-        </div>
-      </div>
+    .sort((a, b) =>
+      sortBy === "points"   ? b.total_points - a.total_points :
+      sortBy === "resolved" ? b.resolved - a.resolved :
+      a.rank - b.rank
     );
-  }
+
+  const stats = {
+    total:        data.length,
+    avgPoints:    data.length > 0 ? Math.round(data.reduce((s, o) => s + o.total_points, 0) / data.length) : 0,
+    totalResolved:data.reduce((s, o) => s + o.resolved, 0),
+    topScore:     data[0]?.total_points || 0,
+  };
+
+  const hasFilters = filterBy !== "all" || !!searchQuery;
+
+  if (loading) return <LoadingSkeleton />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50">
-      
-      {/* Hero Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 text-white shadow-xl">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-yellow-400 rounded-2xl shadow-2xl mb-4 animate-bounce-slow">
-              <Trophy size={40} className="text-purple-900" />
+    <div className="min-h-screen bg-slate-100">
+
+      {/* ── Page Header ── */}
+      <div className="bg-gradient-to-br from-[#0f2a4a] to-[#1a3a6e] pt-8 pb-28">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Title */}
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-amber-400 rounded-2xl shadow-xl mb-4">
+              <Trophy size={28} className="text-[#0f2a4a]" />
             </div>
-            <h1 className="text-5xl font-bold mb-3 flex items-center justify-center gap-3">
+            <h1 className="text-2xl font-bold text-white mb-1 flex items-center justify-center gap-2">
               Officer Leaderboard
-              <Crown className="text-yellow-400" size={36} />
+              <Crown size={22} className="text-amber-400" />
             </h1>
-            <p className="text-purple-100 text-xl">
-              Celebrating our top-performing officers
-            </p>
+            <p className="text-white/60 text-sm">Celebrating our top-performing officers</p>
           </div>
 
-          {/* Top 3 Podium */}
+          {/* Podium */}
           {data.length >= 3 && (
-            <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
-              {/* 2nd Place */}
-              <div className="relative pt-8">
-                <div 
-                  onClick={() => navigate(`/officer/${data[1].officer_id}`)}
-                  className="bg-white/10 backdrop-blur-md border-2 border-gray-300 rounded-2xl p-4 text-center hover:bg-white/20 transition-all cursor-pointer group"
-                >
-                  <div className="w-16 h-16 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl shadow-lg group-hover:scale-110 transition-transform">
-                    🥈
-                  </div>
-                  <p className="font-bold text-lg mb-1">{data[1].name}</p>
-                  <p className="text-sm text-purple-100 mb-2">2nd Place</p>
-                  <div className="bg-white/20 rounded-lg px-3 py-1">
-                    <p className="text-2xl font-bold">{data[1].total_points}</p>
-                    <p className="text-xs text-purple-100">points</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 1st Place */}
-              <div className="relative">
-                <div 
-                  onClick={() => navigate(`/officer/${data[0].officer_id}`)}
-                  className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl p-6 text-center shadow-2xl hover:scale-105 transition-all cursor-pointer border-4 border-yellow-300"
-                >
-                  <Crown className="mx-auto text-yellow-900 mb-2 animate-pulse" size={32} />
-                  <div className="w-20 h-20 bg-gradient-to-br from-yellow-300 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-3 text-4xl shadow-xl border-4 border-yellow-200">
-                    🥇
-                  </div>
-                  <p className="font-bold text-xl mb-1 text-gray-900">{data[0].name}</p>
-                  <p className="text-sm text-yellow-900 mb-3">Champion</p>
-                  <div className="bg-white/30 rounded-lg px-4 py-2">
-                    <p className="text-3xl font-bold text-gray-900">{data[0].total_points}</p>
-                    <p className="text-sm text-yellow-900">points</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* 3rd Place */}
-              <div className="relative pt-8">
-                <div 
-                  onClick={() => navigate(`/officer/${data[2].officer_id}`)}
-                  className="bg-white/10 backdrop-blur-md border-2 border-amber-600 rounded-2xl p-4 text-center hover:bg-white/20 transition-all cursor-pointer group"
-                >
-                  <div className="w-16 h-16 bg-gradient-to-br from-amber-600 to-orange-700 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl shadow-lg group-hover:scale-110 transition-transform">
-                    🥉
-                  </div>
-                  <p className="font-bold text-lg mb-1">{data[2].name}</p>
-                  <p className="text-sm text-purple-100 mb-2">3rd Place</p>
-                  <div className="bg-white/20 rounded-lg px-3 py-1">
-                    <p className="text-2xl font-bold">{data[2].total_points}</p>
-                    <p className="text-xs text-purple-100">points</p>
-                  </div>
-                </div>
-              </div>
+            <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
+              <PodiumCard officer={data[1]} rank={2} onClick={() => navigate(`/officer/${data[1].officer_id}`)} />
+              <PodiumCard officer={data[0]} rank={1} onClick={() => navigate(`/officer/${data[0].officer_id}`)} />
+              <PodiumCard officer={data[2]} rank={3} onClick={() => navigate(`/officer/${data[2].officer_id}`)} />
             </div>
           )}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6 md:p-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 pb-16">
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <StatCard
-            title="Total Officers"
-            value={stats.total}
-            icon={<Users />}
-            color="purple"
-          />
-          <StatCard
-            title="Avg Points"
-            value={stats.avgPoints}
-            icon={<BarChart3 />}
-            color="blue"
-          />
-          <StatCard
-            title="Total Resolved"
-            value={stats.totalResolved}
-            icon={<Target />}
-            color="emerald"
-          />
-          <StatCard
-            title="Top Score"
-            value={stats.topPerformer?.total_points || 0}
-            icon={<Star />}
-            color="yellow"
-          />
+        {/* ── Stats ── */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StatCard label="Total Officers"  value={stats.total}         icon={<Users size={18} />}    variant="navy"    />
+          <StatCard label="Avg Points"      value={stats.avgPoints}     icon={<BarChart3 size={18} />} variant="blue"    />
+          <StatCard label="Total Resolved"  value={stats.totalResolved} icon={<Target size={18} />}   variant="emerald" />
+          <StatCard label="Top Score"       value={stats.topScore}      icon={<Star size={18} />}     variant="amber"   />
         </div>
 
-        {/* Search and Filter Section */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            
+        {/* ── Search + Filter ── */}
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 p-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
             {/* Search */}
             <div className="relative flex-1">
-              <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
               <input
-                placeholder="Search by name or officer ID..."
+                placeholder="Search by name or officer ID…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-lg outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all"
+                className="w-full pl-10 pr-9 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-[#2563eb] focus:ring-2 focus:ring-blue-100 transition-all bg-slate-50 placeholder:text-slate-400"
               />
               {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  <X size={18} />
+                <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  <X size={16} />
                 </button>
               )}
             </div>
 
-            {/* Filter Buttons */}
-            <div className="flex gap-2 flex-wrap">
-              {["all", "top10", "top50"].map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setFilterBy(filter)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                    filterBy === filter
-                      ? "bg-purple-600 text-white shadow-md"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {filter === "all" ? "All Officers" : filter === "top10" ? "Top 10" : "Top 50"}
-                </button>
-              ))}
-            </div>
-
-            {/* Sort Dropdown */}
+            {/* Sort */}
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 border-2 border-gray-200 rounded-lg outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 text-sm"
+              className="px-3 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-[#2563eb] bg-white text-slate-700"
             >
-              <option value="rank">Sort by Rank</option>
-              <option value="points">Sort by Points</option>
-              <option value="resolved">Sort by Resolved</option>
+              <option value="rank">By Rank</option>
+              <option value="points">By Points</option>
+              <option value="resolved">By Resolved</option>
             </select>
 
             {/* Refresh */}
             <button
               onClick={fetchLeaderboard}
-              className="bg-white border-2 border-gray-200 p-3 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all group"
               title="Refresh"
+              className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:border-[#2563eb] hover:text-[#2563eb] hover:bg-blue-50 transition-all group"
             >
-              <RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-500 text-gray-600" />
+              <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
             </button>
           </div>
 
-          {/* Results Info */}
-          <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
-            <p>
-              Showing <span className="font-semibold text-purple-600">{filteredData.length}</span> of {data.length} officers
+          {/* Filter pills */}
+          <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-100">
+            {[
+              { id: "all",   label: "All Officers" },
+              { id: "top10", label: "Top 10"        },
+              { id: "top50", label: "Top 50"        },
+            ].map((f) => (
+              <FilterPill key={f.id} active={filterBy === f.id} onClick={() => setFilterBy(f.id)}>
+                {f.label}
+              </FilterPill>
+            ))}
+          </div>
+
+          {/* Count row */}
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
+            <p className="text-xs text-slate-500">
+              Showing <span className="font-semibold text-[#1d4ed8]">{filteredData.length}</span> of {data.length} officers
             </p>
-            {searchQuery && (
+            {hasFilters && (
               <button
-                onClick={() => setSearchQuery("")}
-                className="text-purple-600 hover:text-purple-700 font-medium"
+                onClick={() => { setSearchQuery(""); setFilterBy("all"); }}
+                className="text-xs text-slate-400 hover:text-red-500 transition-colors flex items-center gap-1"
               >
-                Clear search
+                <X size={12} /> Clear
               </button>
             )}
           </div>
         </div>
 
-        {/* Leaderboard Table */}
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-          
+        {/* ── Table ── */}
+        <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
           {filteredData.length === 0 ? (
-            <div className="text-center py-20">
-              <Trophy className="mx-auto text-gray-300 mb-4" size={64} />
-              <p className="text-gray-400 text-xl font-medium">No officers found</p>
-              <p className="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
-            </div>
+            <EmptyState />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                
-                {/* Header */}
-                <thead className="bg-gradient-to-r from-purple-50 to-fuchsia-50 border-b-2 border-purple-100">
-                  <tr>
-                    <th className="p-4 text-left text-sm font-bold text-gray-700">Rank</th>
-                    <th className="p-4 text-left text-sm font-bold text-gray-700">Officer</th>
-                    <th className="p-4 text-left text-sm font-bold text-gray-700">
-                      <div className="flex items-center gap-1">
-                        <Zap size={16} />
-                        Points
-                      </div>
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50">
+                    <th className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider w-20">Rank</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">Officer</th>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      <span className="flex items-center gap-1"><Zap size={13} />Points</span>
                     </th>
-                    <th className="p-4 text-left text-sm font-bold text-gray-700">
-                      <div className="flex items-center gap-1">
-                        <Target size={16} />
-                        Resolved
-                      </div>
+                    <th className="px-5 py-3.5 text-left text-xs font-bold text-slate-500 uppercase tracking-wider">
+                      <span className="flex items-center gap-1"><Target size={13} />Resolved</span>
                     </th>
-                    <th className="p-4 text-right text-sm font-bold text-gray-700">Action</th>
+                    <th className="px-5 py-3.5 text-right text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
                   </tr>
                 </thead>
-
-                {/* Body */}
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {filteredData.map((o, index) => {
-                    const rankDisplay = getRankDisplay(o.rank);
-                    const isTopThree = o.rank <= 3;
+                    const isTop3 = o.rank <= 3;
+                    const medals = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
                     return (
                       <tr
                         key={o.officer_id}
                         onClick={() => navigate(`/officer/${o.officer_id}`)}
-                        className={`
-                          border-b border-gray-100 cursor-pointer 
-                          transition-all duration-200
-                          hover:bg-gradient-to-r hover:from-purple-50 hover:to-fuchsia-50
-                          ${isTopThree ? 'bg-gradient-to-r from-yellow-50/30 to-orange-50/30' : ''}
-                        `}
+                        className={`cursor-pointer transition-colors duration-150 hover:bg-[#eff6ff] ${isTop3 ? "bg-amber-50/40" : ""}`}
                         style={{ animationDelay: `${index * 30}ms` }}
                       >
                         {/* Rank */}
-                        <td className="p-4">
-                          <div className="flex items-center gap-2">
-                            {rankDisplay.emoji ? (
-                              <span className="text-3xl">{rankDisplay.emoji}</span>
-                            ) : (
-                              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                                <span className="font-bold text-gray-600">{o.rank}</span>
-                              </div>
-                            )}
-                          </div>
+                        <td className="px-5 py-4">
+                          {isTop3 ? (
+                            <span className="text-2xl">{medals[o.rank]}</span>
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center">
+                              <span className="text-sm font-bold text-slate-600">{o.rank}</span>
+                            </div>
+                          )}
                         </td>
 
                         {/* Officer */}
-                        <td className="p-4">
+                        <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-fuchsia-500 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-                              {o.name.charAt(0).toUpperCase()}
-                            </div>
+                            <Avatar name={o.name} rank={o.rank} />
                             <div>
-                              <div className="font-bold text-gray-800 flex items-center gap-2">
+                              <p className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
                                 {o.name}
-                                {isTopThree && <Star className="text-yellow-500 fill-current" size={16} />}
-                              </div>
-                              <div className="text-xs text-gray-500 flex items-center gap-1">
-                                <Shield size={12} />
-                                ID: {o.officer_id}
-                              </div>
+                                {isTop3 && <Star size={13} className="text-amber-500 fill-amber-500" />}
+                              </p>
+                              <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                                <Shield size={11} /> ID: {o.officer_id}
+                              </p>
                             </div>
                           </div>
                         </td>
 
                         {/* Points */}
-                        <td className="p-4">
-                          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 px-3 py-1.5 rounded-lg border border-blue-100">
-                            <Zap className="text-blue-600" size={16} />
-                            <span className="font-bold text-blue-700 text-lg">{o.total_points}</span>
-                          </div>
+                        <td className="px-5 py-4">
+                          <span className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 text-[#1d4ed8] px-3 py-1.5 rounded-lg text-sm font-bold">
+                            <Zap size={14} className="text-[#2563eb]" />
+                            {o.total_points}
+                          </span>
                         </td>
 
                         {/* Resolved */}
-                        <td className="p-4">
-                          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 px-3 py-1.5 rounded-lg border border-emerald-100">
-                            <Target className="text-emerald-600" size={16} />
-                            <span className="font-bold text-emerald-700">{o.resolved}</span>
-                          </div>
+                        <td className="px-5 py-4">
+                          <span className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-sm font-bold">
+                            <Target size={14} className="text-emerald-600" />
+                            {o.resolved}
+                          </span>
                         </td>
 
                         {/* Action */}
-                        <td className="p-4 text-right">
-                          <button className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 font-medium text-sm group">
+                        <td className="px-5 py-4 text-right">
+                          <button className="inline-flex items-center gap-1 text-[#1d4ed8] hover:text-[#2563eb] font-medium text-xs group">
                             View Profile
-                            <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                            <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
                           </button>
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
-
               </table>
             </div>
           )}
         </div>
-      </div>
-    </div>
-  );
-}
-
-/* Stat Card Component */
-function StatCard({ title, value, icon, color }) {
-  const colors = {
-    purple: {
-      bg: "from-purple-500 to-violet-600",
-      text: "text-purple-600",
-      light: "bg-purple-50"
-    },
-    blue: {
-      bg: "from-blue-500 to-indigo-600",
-      text: "text-blue-600",
-      light: "bg-blue-50"
-    },
-    emerald: {
-      bg: "from-emerald-500 to-green-600",
-      text: "text-emerald-600",
-      light: "bg-emerald-50"
-    },
-    yellow: {
-      bg: "from-yellow-500 to-orange-600",
-      text: "text-yellow-600",
-      light: "bg-yellow-50"
-    },
-  };
-
-  return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-      <div className={`h-2 bg-gradient-to-r ${colors[color].bg}`}></div>
-      <div className="p-4 text-center">
-        <div className={`inline-flex p-2 rounded-lg ${colors[color].light} mb-2`}>
-          <div className={colors[color].text}>
-            {icon}
-          </div>
-        </div>
-        <p className="text-gray-500 text-xs font-medium mb-1">{title}</p>
-        <h3 className={`text-2xl font-bold ${colors[color].text}`}>
-          {value}
-        </h3>
       </div>
     </div>
   );

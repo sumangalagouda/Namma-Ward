@@ -39,10 +39,16 @@ export default function OfficerDashboard() {
   const fetchComplaints = async () => {
     setLoading(true);
     try {
+      // fetch only complaints assigned to this officer
       const res = await api.get("/complaints/officer");
-      setComplaints(res.data);
+      console.debug("/complaints/officer response:", res);
+      // support APIs that return { data: [...] } or [...] directly
+      const data = res.data?.data ?? res.data;
+      setComplaints(Array.isArray(data) ? data : []);
     } catch (error) {
-      showNotification("Failed to load complaints", "error");
+      console.error("fetchComplaints error:", error.response ?? error);
+      const msg = error.response?.data?.message || error.response?.data?.error || "Failed to load complaints";
+      showNotification(msg, "error");
     }
     setLoading(false);
   };
