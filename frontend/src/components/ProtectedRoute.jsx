@@ -9,7 +9,20 @@ export default function ProtectedRoute({ children, roles }) {
     return <Navigate to="/login" />;
   }
 
-  const payload = JSON.parse(atob(token.split(".")[1]));
+  let payload;
+  try {
+    payload = JSON.parse(atob(token.split(".")[1]));
+  } catch (error) {
+    localStorage.removeItem("token");
+    return <Navigate to="/login" />;
+  }
+
+  // exp is in seconds; Date.now() is in milliseconds
+  if (payload?.exp && payload.exp * 1000 < Date.now()) {
+    localStorage.removeItem("token");
+    return <Navigate to="/login" />;
+  }
+
   const userRole = payload.role;
 
   // role restriction

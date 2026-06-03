@@ -15,47 +15,6 @@ const STAT_GRADIENTS = {
   amber:   "from-amber-500 to-orange-500",
 };
 
-const MANUAL_LEADERBOARD_FALLBACK = {
-  OFF001: { total_points: 92, resolved: 14 },
-  OFF002: { total_points: 84, resolved: 12 },
-  OFF003: { total_points: 76, resolved: 11 },
-  OFF004: { total_points: 63, resolved: 9 },
-  OFF005: { total_points: 58, resolved: 8 },
-  OFF006: { total_points: 47, resolved: 7 },
-};
-
-function normalizeOfficerId(officerId) {
-  return (officerId ?? "").toString().trim().toUpperCase();
-}
-
-function withManualFallback(list) {
-  const patched = (Array.isArray(list) ? list : []).map((officer) => {
-    const normalizedId = normalizeOfficerId(officer.officer_id);
-    const fallback = MANUAL_LEADERBOARD_FALLBACK[normalizedId];
-    const hasZeroValues = Number(officer.total_points || 0) === 0 && Number(officer.resolved || 0) === 0;
-
-    if (!fallback || !hasZeroValues) return officer;
-
-    return {
-      ...officer,
-      total_points: fallback.total_points,
-      resolved: fallback.resolved,
-    };
-  });
-
-  const sorted = [...patched].sort((a, b) => {
-    const pointsDiff = Number(b.total_points || 0) - Number(a.total_points || 0);
-    if (pointsDiff !== 0) return pointsDiff;
-
-    const resolvedDiff = Number(b.resolved || 0) - Number(a.resolved || 0);
-    if (resolvedDiff !== 0) return resolvedDiff;
-
-    return (a.name || "").localeCompare(b.name || "");
-  });
-
-  return sorted.map((officer, index) => ({ ...officer, rank: index + 1 }));
-}
-
 // ─── StatCard ─────────────────────────────────────────────────────────────────
 function StatCard({ label, value, icon, variant = "navy" }) {
   return (
@@ -198,7 +157,7 @@ export default function Leaderboard() {
     setLoading(true);
     try {
       const res = await api.get("/officers/leaderboard");
-      setData(withManualFallback(res.data));
+      setData(res.data);
     } catch (err) {
       console.error(err);
     } finally {

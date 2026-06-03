@@ -12,4 +12,22 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+
+    // If JWT is missing/expired/invalid, reset auth state and send user to login.
+    if (status === 401) {
+      localStorage.removeItem("token");
+
+      if (!window.location.pathname.startsWith("/login")) {
+        window.location.href = "/login?session=expired";
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default api;
